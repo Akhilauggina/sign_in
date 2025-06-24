@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up / Login</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font for better aesthetics -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-200 p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full border border-gray-200">
+        <h2 id="formTitle" class="text-3xl font-extrabold text-center text-gray-800 mb-6">
+            Welcome Back!
+        </h2>
+
+        <!-- Message display area -->
+        <div id="messageContainer" class="hidden p-3 mb-4 rounded-lg text-sm text-center transition-opacity duration-300"></div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="hidden text-center">
+            <p class="text-lg text-gray-700 mb-6">Hello, <span id="loggedInUserDisplay" class="font-semibold text-blue-600"></span>!</p>
+            <p class="text-gray-600 mb-8">This is your personalized dashboard. In a real application, you would see your profile information and features here.</p>
+            <button
+                id="logoutButton"
+                class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300 transform hover:scale-105"
+            >
+                Log Out
+            </button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="">
+            <div class="mb-4">
+                <label for="loginUsername" class="block text-gray-700 text-sm font-bold mb-2">
+                    Username
+                </label>
+                <input
+                    type="text"
+                    id="loginUsername"
+                    name="username"
+                    placeholder="Enter your username"
+                    class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                    required
+                />
+            </div>
+            <div class="mb-4">
+                <label for="loginPassword" class="block text-gray-700 text-sm font-bold mb-2">
+                    Password
+                </label>
+                <input
+                    type="password"
+                    id="loginPassword"
+                    name="password"
+                    placeholder="Enter your password"
+                    class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 transform hover:scale-105"
+            >
+                Log In
+            </button>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form id="signupForm" class="hidden">
+            <div class="mb-4">
+                <label for="signupUsername" class="block text-gray-700 text-sm font-bold mb-2">
+                    Username
+                </label>
+                <input
+                    type="text"
+                    id="signupUsername"
+                    name="username"
+                    placeholder="Choose a username"
+                    class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                    required
+                />
+            </div>
+            <div class="mb-4">
+                <label for="signupEmail" class="block text-gray-700 text-sm font-bold mb-2">
+                    Email
+                </label>
+                <input
+                    type="email"
+                    id="signupEmail"
+                    name="email"
+                    placeholder="Enter your email"
+                    class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                    required
+                />
+            </div>
+            <div class="mb-4">
+                <label for="signupPassword" class="block text-gray-700 text-sm font-bold mb-2">
+                    Password
+                </label>
+                <input
+                    type="password"
+                    id="signupPassword"
+                    name="password"
+                    placeholder="Create a password"
+                    class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-300 transform hover:scale-105"
+            >
+                Sign Up
+            </button>
+        </form>
+
+        <p class="text-center text-gray-600 text-sm mt-6">
+            <span id="toggleText">Don't have an account?</span>
+            <button
+                id="toggleFormButton"
+                class="ml-1 font-bold text-blue-600 hover:text-blue-800 focus:outline-none focus:underline transition duration-200"
+            >
+                Sign Up
+            </button>
+        </p>
+    </div>
+
+    <script>
+        // DOM Elements
+        const formTitle = document.getElementById('formTitle');
+        const messageContainer = document.getElementById('messageContainer');
+        const dashboardView = document.getElementById('dashboardView');
+        const loggedInUserDisplay = document.getElementById('loggedInUserDisplay');
+        const logoutButton = document.getElementById('logoutButton');
+
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const toggleFormButton = document.getElementById('toggleFormButton');
+        const toggleText = document.getElementById('toggleText');
+
+        let isLoginView = true; // State to control which form is visible
+        let loggedInUser = null; // State to track logged-in user
+
+        // --- Functions for managing UI state ---
+
+        /**
+         * Displays a message to the user.
+         * @param {string} msg - The message to display.
+         * @param {boolean} isSuccess - True if it's a success message, false for error.
+         */
+        function showMessage(msg, isSuccess) {
+            messageContainer.textContent = msg;
+            messageContainer.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+            if (isSuccess) {
+                messageContainer.classList.add('bg-green-100', 'text-green-700');
+            } else {
+                messageContainer.classList.add('bg-red-100', 'text-red-700');
+            }
+            // Hide message after 3 seconds
+            setTimeout(() => {
+                messageContainer.classList.add('hidden');
+            }, 3000);
+        }
+
+        /**
+         * Switches between login and signup forms.
+         */
+        function toggleFormView() {
+            isLoginView = !isLoginView;
+            if (isLoginView) {
+                formTitle.textContent = 'Welcome Back!';
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                toggleText.textContent = "Don't have an account?";
+                toggleFormButton.textContent = "Sign Up";
+            } else {
+                formTitle.textContent = 'Join Us!';
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                toggleText.textContent = "Already have an account?";
+                toggleFormButton.textContent = "Log In";
+            }
+        }
+
+        /**
+         * Updates the UI based on login status.
+         */
+        function updateUIForLoginStatus() {
+            if (loggedInUser) {
+                // Show dashboard
+                formTitle.textContent = 'Dashboard';
+                dashboardView.classList.remove('hidden');
+                loggedInUserDisplay.textContent = loggedInUser;
+
+                // Hide forms and toggle button
+                loginForm.classList.add('hidden');
+                signupForm.classList.add('hidden');
+                toggleFormButton.classList.add('hidden');
+                toggleText.classList.add('hidden');
+            } else {
+                // Show login/signup forms
+                dashboardView.classList.add('hidden');
+                toggleFormButton.classList.remove('hidden');
+                toggleText.classList.remove('hidden');
+                toggleFormView(); // Reset to login view
+            }
+        }
+
+        // --- Event Handlers ---
+
+        /**
+         * Handles user sign-up submission.
+         * @param {Event} e - The form submission event.
+         */
+        async function handleSignUp(e) {
+            e.preventDefault();
+            const username = e.target.username.value;
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+
+            if (!username || !email || !password) {
+                showMessage('Please fill in all fields.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch('api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Sign up successful! Please log in.', true);
+                    toggleFormView(); // Switch to login view
+                    e.target.reset(); // Clear form fields
+                } else {
+                    showMessage(data.message || 'Sign up failed. Please try again.', false);
+                }
+            } catch (error) {
+                console.error('Error during sign up:', error);
+                showMessage('Network error. Could not connect to the server.', false);
+            }
+        }
+
+        /**
+         * Handles user login submission.
+         * @param {Event} e - The form submission event.
+         */
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = e.target.username.value;
+            const password = e.target.password.value;
+
+            if (!username || !password) {
+                showMessage('Please enter both username and password.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch('api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    loggedInUser = data.user.username; // Set logged-in user
+                    showMessage(`Welcome, ${loggedInUser}! You are logged in.`, true);
+                    updateUIForLoginStatus(); // Update UI to dashboard
+                    e.target.reset(); // Clear form fields
+                } else {
+                    showMessage(data.message || 'Login failed. Please check your credentials.', false);
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                showMessage('Network error. Could not connect to the server.', false);
+            }
+        }
+
+        /**
+         * Handles user logout.
+         */
+        function handleLogout() {
+            loggedInUser = null; // Clear logged-in user
+            showMessage('You have been logged out.', true);
+            updateUIForLoginStatus(); // Update UI to forms
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', updateUIForLoginStatus); // Initial UI setup
+        signupForm.addEventListener('submit', handleSignUp);
+        loginForm.addEventListener('submit', handleLogin);
+        logoutButton.addEventListener('click', handleLogout);
+        toggleFormButton.addEventListener('click', toggleFormView);
+
+    </script>
+</body>
+</html>
